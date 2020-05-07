@@ -1,0 +1,31 @@
+#map {
+	width: 800px;
+	height: 600px;
+	padding: 20px;
+	background-color: skyblue;
+	overflow: hidden;
+}
+
+#map-davao {
+	width: 100%;
+	height: 100%;
+}
+
+.hover {
+	background-color: #FF9800;
+}
+
+path {
+	cursor: pointer;
+}
+
+.sample-box {
+	background-color: #fff;
+	position: absolute;
+	padding: 10px;
+	width: 150px;
+}
+
+.sample-box p {
+	line-height: 10px;
+}
