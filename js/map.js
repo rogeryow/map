@@ -1,67 +1,125 @@
+import * as util from './util.js'
+
 window.addEventListener('DOMContentLoaded', (event) => {
-    initMap()
-	keyEvents()
+    startMap()
+	keyBoardEvents()
+	fullScreenChange()
 })
 
-function initMap() {
-	let scale = 1
+function startMap() {
 	const map = document.getElementById('map-davao')
 	const states = document.querySelectorAll('path') 
 
-	mapEvents()
-
-	map.addEventListener('wheel', zoom)
+	// map.addEventListener('wheel', util.zoom)
 	
-	function zoom(event) {
-		event.preventDefault()
-		scale += (event.deltaY/5) * -0.01
-		scale = Math.min(Math.max(1, scale), 4)
-		this.style.transform = `scale(${scale})`
-	}
+	let barangayList = [
+		'kapatagan',
+		'dulangan',
+		'soong',
+		'balabag',
+		'goma',
+		'binaton',
+		'ruparan',
+		'kiagot',
+		'sinawilan',
+		'tres de mayo',
+		'san agustin',
+		'mahayahay',
+		'lungag',
+		'san roque',
+		'matti',
+		'zone 1',
+		'zone 2',
+		'zone 3',
+		'cogon',
+		'aplaya',
+		'san miguel',
+		'san jose',
+		'dawis',
+		'tiguman',
+		'colorado',
+		'igpit',
+	]
 
-	function mapEvents() {
+	util.XMLRequest('../data/json/digos.json')
+	.then((data) => {
+		data.forEach((value) => {
+			if(barangayList.includes(value.barangay)) {
+				let barangayNode = document.querySelector(`[data-name='${value.barangay}']`)
+
+				for (let key in value.statistics) {
+					if (value.statistics.hasOwnProperty(key)) {
+						barangayNode.setAttribute(key, value.statistics[key])
+					}
+				}
+
+			}
+		})
+
+		// for now start
 		states.forEach((state) => {
+			console.log(state)
+			const stats = []
+			if(state.hasAttribute('red')) {
+				stats.red = state.getAttribute('red')
+			}
+			if(state.hasAttribute('yellow')) {
+				stats.yellow = state.getAttribute('yellow')
+			}
+			if(state.hasAttribute('green')) {
+				stats.green = state.getAttribute('green')
+			}
+			if(state.hasAttribute('blue')) {
+				stats.blue = state.getAttribute('blue')
+			}
+
+			if(stats.red || stats.yellow || stats.green || stats.blue) {
+				const max = Object.keys(stats).reduce((a, b) => stats[a] > stats[b] ? a : b )
+				console.log(stats)
+				console.log(max)
+				if(max == 'red') {
+					state.style.fill = '#ED5564'
+				}else if(max == 'yellow') {
+					state.style.fill = '#FFCE54'
+				}else  if(max == 'green') {
+					state.style.fill = '#A0D568'
+				}else if(max == 'blue') {
+					state.style.fill = '#4FC1E8'
+				}
+			}
+
 			state.addEventListener('click', function() {
-				// console.log(this.getAttribute('data-name'))
+				console.log(state.getAttribute('data-name'))
 			})
 
 			state.addEventListener('mouseover', function() {
-				this.style.fill = '#FF9800'
+				// state.style.fill = '#FF9800'
 			})
 
 			state.addEventListener('mouseout', function() {
-				this.style.fill = 'f3f3f3'
+				// state.style.fill = 'f3f3f3'
 			})
 		})
-	}
+		// for now end
+
+	})
+	.catch((message) => {
+		console.log(message)
+	})
+	
 }
 
-function keyEvents() {
+function keyBoardEvents() {
 	document.addEventListener('keypress', function (event) {
 		const key = event.keyCode 
 		if (key === 102) {
-			toggleFullScreen()	
+			util.toggleFullScreen()	
 		}
 	}, false)	
 }
 
-
-
-function getFullScreen() {
-	return document.fullscreenElement
-		|| document.webkitfullscreenElement
-		|| document.mozfullscreenElement
-		|| document.msfullscreenElement
+function fullScreenChange() {
+	document.addEventListener('fullscreenchange', function () {
+		// todo
+	})
 }
-
-function toggleFullScreen() {
-	if (getFullScreen()) {
-		document.exitFullscreen()
-	} else {
-		document.getElementById('map').requestFullscreen()
-	}
-}
-
-document.addEventListener('fullscreenchange', function () {
-	console.log('full screen changed')
-})
