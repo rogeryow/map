@@ -41,6 +41,12 @@ function getFullScreen() {
 		|| document.msfullscreenElement
 }
 
+function fullScreenChange(callback) {
+	document.addEventListener('fullscreenchange', function () {
+		callback()
+	})
+}
+
 function toggleFullScreen() {
 	if (getFullScreen()) {
 		document.exitFullscreen()
@@ -54,5 +60,6 @@ export {
 	zoom,
 	returnOnlyNumbers,
 	getFullScreen,
-	toggleFullScreen, 
+	fullScreenChange, 
+	toggleFullScreen,
 }
