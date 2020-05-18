@@ -56,8 +56,10 @@ function startMap() {
 	util.XMLRequest('../data/json/digos.json')
 	.then((barangays) => {
 		setMapAttribute(barangays)
-		setMapColor(barangays)
+		setMapColor(barangays, {green: false})
 		addMapClick()
+		addMapHoverOver()
+		addMapHoverOut()
 
 		function setMapAttribute(barangays) {
 			barangays.forEach(({barangay, statistics}) => {
@@ -73,8 +75,13 @@ function startMap() {
 			})
 		}
 		
-		function setMapColor(barangays) {
+		function setMapColor(barangays, option = '') {
 			barangays.forEach(({barangay, statistics}) => {
+				if(option.red == false) delete statistics.red 
+				if(option.yellow == false) delete statistics.yellow 
+				if(option.green == false) delete statistics.green 
+				if(option.blue == false) delete statistics.blue 
+				
 				const getBarangayMaxStat = Object.keys(statistics).reduce((now, current) => statistics[now] > statistics[current] ? now : current )
 				fillColor(barangay, getBarangayMaxStat)
 			})
@@ -97,21 +104,61 @@ function startMap() {
 		}
 			
 		function addMapClick() {
-			states.addEventListener('click', function() {
-				console.log(states.getAttribute('data-name'))
+			map.addEventListener('click', function({target}) {
+				console.log(target.getAttribute('data-name'))
 			})	
 		}
 		
+		function addMapHoverOver() {
+				map.addEventListener('mouseover', function({target}) {
+				let data = getMapData(target) 
+				if(data) formatText(data)
 
-		// 	state.addEventListener('mouseover', function() {
-		// 		// state.style.fill = '#FF9800'
-		// 	})
+				// todo
+				target.style.stroke = '#009688'
+				target.style.strokeWidth = '3px'
+			})
+		}
 
-		// 	state.addEventListener('mouseout', function() {
-		// 		// state.style.fill = 'f3f3f3'
-		// 	})
-		// })
-		// for now end
+		function addMapHoverOut() {
+			map.addEventListener('mouseout', function({target}) {
+				target.style.stroke = '#aeaeaf'
+				target.style.strokeWidth = '1px'
+			})
+		}
+
+		function getMapData(target) {
+			if(target.getAttribute('data-name') == null) return
+
+			let data = {}
+			let stats = {}
+
+			data.barangay = target.getAttribute('data-name')
+			stats.red = parseInt(target.getAttribute('red')) || 0 
+			stats.yellow = parseInt(target.getAttribute('yellow')) || 0 
+			stats.green = parseInt(target.getAttribute('green')) || 0 
+			stats.blue = parseInt(target.getAttribute('blue')) || 0 
+			
+			data.stats = stats
+
+			return data
+		}
+
+		function formatText(data) {
+			const {barangay, stats} = data
+
+			const barangayText = document.getElementById('barangay-text')
+			const redText = document.getElementById('red-text')
+			const yellowText = document.getElementById('yellow-text')
+			const greenText = document.getElementById('green-text')
+			const blueText = document.getElementById('blue-text')
+
+			barangayText.innerHTML = barangay
+			redText.innerHTML = stats.red
+			yellowText.innerHTML = stats.yellow
+			greenText.innerHTML = stats.green
+			blueText.innerHTML = stats.blue
+		}
 
 	})
 	.catch((errorMessage) => {
