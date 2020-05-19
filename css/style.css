@@ -1,5 +1,10 @@
+@font-face {
+	src: url(fonts/SourceSansPro.ttf);
+	font-family: sansPro;
+}
+
 body {
-	font-family: calibri;
+	font-family: sansPro;
 }
 
 #map {
@@ -30,6 +35,9 @@ path {
 	width: 150px;
 }
 
-.sample-box p {
-	line-height: 10px;
+.filter-box {
+	position: absolute;
+	background-color: #fff;
+	padding: 10px;
+	top: 180px;
 }

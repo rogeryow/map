@@ -56,10 +56,11 @@ function startMap() {
 	util.XMLRequest('../data/json/digos.json')
 	.then((barangays) => {
 		setMapAttribute(barangays)
-		setMapColor(barangays, {green: false})
+		setMapColor(barangays)
 		addMapClick()
 		addMapHoverOver()
 		addMapHoverOut()
+		addMapColorfilter()
 
 		function setMapAttribute(barangays) {
 			barangays.forEach(({barangay, statistics}) => {
@@ -75,16 +76,17 @@ function startMap() {
 			})
 		}
 		
-		function setMapColor(barangays, option = '') {
-			barangays.forEach(({barangay, statistics}) => {
-				if(option.red == false) delete statistics.red 
-				if(option.yellow == false) delete statistics.yellow 
-				if(option.green == false) delete statistics.green 
-				if(option.blue == false) delete statistics.blue 
-				
-				const getBarangayMaxStat = Object.keys(statistics).reduce((now, current) => statistics[now] > statistics[current] ? now : current )
+		function setMapColor(barangays, option = {red: true, yellow: true, green: true, blue: true}) {
+			for (const [index, {barangay, statistics}] of barangays.entries()) {
+				const filteredStat = {}
+				if(option.red) filteredStat.red = statistics.red
+				if(option.yellow) filteredStat.yellow = statistics.yellow
+				if(option.green) filteredStat.green = statistics.green
+				if(option.blue) filteredStat.blue = statistics.blue
+
+				const getBarangayMaxStat = Object.keys(filteredStat).reduce((now, current) => filteredStat[now] > filteredStat[current] ? now : current )
 				fillColor(barangay, getBarangayMaxStat)
-			})
+			}
 		}
 
 		function fillColor(barangay, color) {
@@ -115,8 +117,6 @@ function startMap() {
 				if(data) formatText(data)
 
 				// todo
-				target.style.stroke = '#009688'
-				target.style.strokeWidth = '3px'
 			})
 		}
 
@@ -158,6 +158,23 @@ function startMap() {
 			yellowText.innerHTML = stats.yellow
 			greenText.innerHTML = stats.green
 			blueText.innerHTML = stats.blue
+		}
+
+		function addMapColorfilter() {
+			const checkNodes = Array.from(document.getElementsByClassName('filter-color'))
+			const option = {}
+
+			checkNodes.forEach((node) => {
+				node.addEventListener('click', function() {
+					console.log('clicked')
+					checkNodes.map((node) => {
+						let color = node.getAttribute('color')
+						if(node.checked) option[color] = true
+						else option[color] = false
+					})
+					setMapColor(barangays, option)
+				})
+			})
 		}
 
 	})
