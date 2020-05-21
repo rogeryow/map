@@ -21,17 +21,19 @@ function XMLRequest(url) {
 function zoom(event) {
 	event.preventDefault()
 
-	console.log(this)
 	let scale = returnOnlyNumbers(this.style.transform) || 1
-	console.log(scale)
-	scale += (event.deltaY/5) * -0.01
+	scale += (event.deltaY/4.5) * -0.01
 	scale = Math.min(Math.max(1, scale), 4)
-	console.log(scale)
 	this.style.transform = `scale(${scale})`
 }
 
+function resetZoom(node) {
+	console.log(node)
+	node.style.transform = `scale(${1})`	
+}
+
 function returnOnlyNumbers(string) {
-	return string.replace(/\D/g, '')
+    return parseFloat(string.replace(/\(|\)|scale/g,''))
 }
 
 function getFullScreen() {
@@ -47,17 +49,18 @@ function fullScreenChange(callback) {
 	})
 }
 
-function toggleFullScreen() {
+function toggleFullScreen(node) {
 	if (getFullScreen()) {
 		document.exitFullscreen()
 	} else {
-		document.getElementById('map').requestFullscreen()
+		node.requestFullscreen()
 	}
 }
 
 export { 
 	XMLRequest, 
 	zoom,
+	resetZoom,
 	returnOnlyNumbers,
 	getFullScreen,
 	fullScreenChange, 

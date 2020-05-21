@@ -2,7 +2,6 @@ import * as util from './util.js'
 
 window.addEventListener('DOMContentLoaded', (event) => {
     startMap()
-	keyBoardEvents()
 	util.fullScreenChange(test)
 })
 
@@ -11,10 +10,11 @@ function test() {
 }
 
 function startMap() {
+	const mapRoot = document.getElementById('map-root')
+	const mapContainer = document.getElementById('map')
 	const map = document.getElementById('map-davao')
 	const states = document.querySelectorAll('path') 
 
-	// map.addEventListener('wheel', util.zoom)
 	const stats = [{
 		total: {
 			red: 0,
@@ -61,6 +61,8 @@ function startMap() {
 		addMapHoverOver()
 		addMapHoverOut()
 		addMapColorfilter()
+		addMapKeyEvents()
+		addMapZoom()
 
 		function setMapAttribute(barangays) {
 			barangays.forEach(({barangay, statistics}) => {
@@ -104,13 +106,18 @@ function startMap() {
 				default: barangayNode.style.fill = 'grey'
 			}
 		}
-			
+
 		function addMapClick() {
 			map.addEventListener('click', function({target}) {
-				console.log(target.getAttribute('data-name'))
+				const barangay = target.getAttribute('data-name')
+				displayPuroks(barangay)
 			})	
 		}
 		
+		function displayPuroks(barangay) {
+			console.log(barangay)
+		}
+
 		function addMapHoverOver() {
 				map.addEventListener('mouseover', function({target}) {
 				let data = getMapData(target) 
@@ -177,19 +184,76 @@ function startMap() {
 			})
 		}
 
+		function addMapZoom() {
+			map.addEventListener('wheel', util.zoom)
+		}
+
+		function addMapKeyEvents() {
+			document.addEventListener('keydown', function(event) {
+				let key = event.key.toLowerCase()
+				let getMapLeftCord = util.returnOnlyNumbers(mapContainer.style.left) || 0
+				let getMapTopCord = util.returnOnlyNumbers(mapContainer.style.top) || 0 
+				const INCREASE = 20
+				const addMapBorders = {
+
+				}
+
+				if(key == 'a') {
+					moveLeft()
+				}
+				if(key == 's') {
+					moveDown() 
+				}
+				if(key == 'd') {
+					moveRight()	
+				}
+				if(key == 'w') {
+					moveTop()
+				}
+				if(key == 'f') {
+					fullScreen()
+				}
+				if(key == 'r') {
+					resetMapPlacement()
+				}
+
+				function moveLeft() {
+					let newLeft = getMapLeftCord - INCREASE
+					mapContainer.style.left = newLeft + 'px'
+				}
+
+				function moveRight() {
+					let newLeft = getMapLeftCord + INCREASE
+					mapContainer.style.left = newLeft + 'px'
+				}
+
+				function moveDown() {
+					let newTop = getMapTopCord + INCREASE
+					mapContainer.style.top = newTop + 'px'
+				}
+
+				function moveTop() {
+					let newTop = getMapTopCord - INCREASE
+					mapContainer.style.top = newTop + 'px'
+				}
+
+				function fullScreen() {
+					util.toggleFullScreen(mapRoot)	
+				}
+
+				function resetMapPlacement() {
+					util.resetZoom(map)
+					mapContainer.style.top = '0'
+					mapContainer.style.left = '0'
+				}
+
+			})
+		}
+
 	})
 	.catch((errorMessage) => {
 		console.log(errorMessage)
 	})
 	
-}
-
-function keyBoardEvents() {
-	document.addEventListener('keypress', function (event) {
-		const key = event.keyCode 
-		if (key === 102) {
-			util.toggleFullScreen()	
-		}
-	}, false)	
 }
 

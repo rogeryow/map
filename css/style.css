@@ -5,19 +5,40 @@
 
 body {
 	font-family: sansPro;
+	padding: 0;
+	margin: 0;
+}
+
+#map-root {
+	background-color: skyblue;
+	width: 100%;
+	height: 100vh;
+	overflow: scroll;
 }
 
 #map {
-	width: 800px;
-	height: 600px;
 	padding: 20px;
-	background-color: skyblue;
+	position: relative;	
+	top: 0px;
+	left: 0px;
+}
+
+#map-sidebar {
+	float: left;
+	background-color: #fff;
+	width: 25%;
+	height: 100%;
+}
+
+#map-content {
+	width: 75%;
+	height: 100%;
+	float: left;
 	overflow: hidden;
 }
 
 #map-davao {
-	width: 100%;
-	height: 100%;
+	height: 600px;	
 }
 
 .hover {
@@ -29,6 +50,7 @@ path {
 }
 
 .stat-box {
+	z-index: 2;
 	background-color: #fff;
 	position: absolute;
 	padding: 10px;
@@ -36,6 +58,7 @@ path {
 }
 
 .filter-box {
+	z-index: 2;
 	position: absolute;
 	background-color: #fff;
 	padding: 10px;
